@@ -1,0 +1,2 @@
+all:
+	mxmlc Madvillain.as
