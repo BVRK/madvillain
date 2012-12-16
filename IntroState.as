@@ -24,8 +24,15 @@ package
 
         private function drawChunk(chunk:Chunk, screen_x0:int, screen_y0:int):void
         {
-            var sprite:FlxSprite = new FlxSprite(0, 0, monominoGfx);
-            var sprite_w:int = sprite.frameWidth, sprite_h:int = sprite.frameHeight;
+            var sprite_w:int, sprite_h:int;
+
+            // compute sprite size
+            {
+                var sprite:FlxSprite = new FlxSprite(0, 0, monominoGfx);
+                
+                sprite_w = sprite.frameWidth;
+                sprite_h = sprite.frameHeight;
+            }
 
             for (var y:int = 0; y < chunk.height; y++)
             {
@@ -42,10 +49,20 @@ package
             }
         }
 
+        private function drawNewChunk(timer:FlxTimer = null):void
+        {
+            clear();
+
+            var chk:Chunk = Geology.Monomino.makeChunk();
+            drawChunk(chk, 50, 50);
+        }
+
         public override function create():void
         {
-            var chk:Chunk = Geology.makeChunk();
-            drawChunk(chk, 50, 50);
+            drawNewChunk();
+
+            var timer:FlxTimer = new FlxTimer();
+            timer.start(3, 100, drawNewChunk);
         }
     }
 }
