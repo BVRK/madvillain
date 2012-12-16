@@ -2,10 +2,19 @@ package
 {
     public class Geology
     {
-        public static function makeChunk(workspace_w:int = 7, workspace_h:int = 7, n_atoms:int = 20):Chunk
-        {
-            const atom_stride:int = 1;
+        public static const Monomino:Geology = new Geology(1, [Chunk.Monomino]);
 
+        private var _atomStride:int;
+        private var _minoSet:Array;
+
+        public function Geology(atom_stride:int, mino_set:Array)
+        {
+            _atomStride = atom_stride;
+            _minoSet = mino_set;
+        }
+
+        public function makeChunk(workspace_w:int = 7, workspace_h:int = 7, n_atoms:int = 20):Chunk
+        {
             // build an empty chunk
             var workspace:Chunk = Chunk.empty(workspace_w, workspace_h);
             var atom_count:int = 0;
@@ -13,14 +22,16 @@ package
             // drop a mino in the center of it
             var workspace_center_x:int = workspace_w / 2, 
                 workspace_center_y:int = workspace_h / 2;
-            workspace = workspace.tryMerge(Chunk.Monomino, workspace_center_x, workspace_center_y);
-            atom_count += atom_stride;
+            // FIXME
+            workspace = workspace.tryMerge(_minoSet[0], workspace_center_x, workspace_center_y);
+            atom_count += _atomStride;
 
             // until there are enough atoms in the workspace:
             while (atom_count < n_atoms)
             {
                 // choose a random mino
-                var mino:Chunk = Chunk.Monomino;
+                // FIXME
+                var mino:Chunk = _minoSet[0];
 
                 // choose a random side/starting position of the workspace
                 var x0:int, y0:int, dx:int, dy:int;
@@ -94,7 +105,7 @@ package
                 {
                     // at least one merge succeeded; that's our new workspace.
                     workspace = last_good_merge;
-                    atom_count += atom_stride;
+                    atom_count += _atomStride;
                 }
                 else
                 {
