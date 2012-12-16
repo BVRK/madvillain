@@ -69,7 +69,7 @@ package
             
             for (var y:int = 0; y < _arr.length; y++)
             {
-                // one easy trick discovered by a mom to deep-copy an array
+                // one weird trick discovered by a mom to deep-copy an array
                 new_arr[y] = _arr[y].concat();
             }
             

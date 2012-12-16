@@ -4,7 +4,7 @@ package
     {
         public static function makeChunk():Chunk
         {
-            const workspace_w:int = 11, workspace_h:int = 11;
+            const workspace_w:int = 7, workspace_h:int = 7;
             const n_atoms:int = 20, atom_stride:int = 1;
 
             // build an empty chunk
@@ -75,7 +75,7 @@ package
                 while (true)
                 {
                     var merged:Chunk = workspace.tryMerge(mino, x, y);
-                    
+
                     if (merged)
                     {
                         // this merge works; write it down
