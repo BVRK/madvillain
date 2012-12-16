@@ -6,7 +6,7 @@ package
         private static const _:Boolean = false;
 
         // an atom of tetrominium
-        public static const Atom:Chunk = new Chunk([[$]]);
+        public static const Monomino:Chunk = new Chunk([[$]]);
 
         // the 7 tetrominoes
         public static const SBlock:Chunk = new Chunk([[_, $, $],
@@ -50,12 +50,35 @@ package
         public function Chunk(pattern:Array)
         {
             arr = pattern;
+            computeShadows();
         }
 
-        // compute "shadows" - the sets of x and y coordinates that contain one or more atoms of tetrominium
+        // compute "shadows" - the sets of x and y coordinates that contain one or more blocks of tetrominium
         private function computeShadows():void
         {
+            var y_shadow:Array = new Array(height);
+            var x_shadow:Array = new Array(width);
 
+            // clear shadows
+            var clear:Function = function(obj:Object, index:int, arr:Array):void { arr[index] = false; };
+            x_shadow.forEach(clear);
+            y_shadow.forEach(clear);
+
+            // populate shadows
+            for (var y:int = 0; y < height; y++)
+            {
+                for (var x:int = 0; x < width; x++)
+                {
+                    if (arr[y][x]) 
+                    {
+                        x_shadow[x] = true;
+                        y_shadow[y] = true;
+                    }
+                }
+            }
+
+            xShadow = x_shadow;
+            yShadow = y_shadow;
         }
 
         // return the state of a given pixel in this chunk
@@ -64,6 +87,12 @@ package
             return arr[y][x];
         }
 
+        public function get width():int { return arr[0].length; }
+        public function get height():int { return arr.length; }
+
         private var arr:Array;
+
+        private var xShadow:Array;
+        private var yShadow:Array;
     }
 }
