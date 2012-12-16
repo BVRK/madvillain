@@ -47,10 +47,33 @@ package
             return new Chunk(new_arr);
         }
 
-        public function Chunk(pattern:Array)
+        public function Chunk(pattern:Array, x_shadow:Array = null, y_shadow:Array = null)
         {
-            arr = pattern;
-            computeShadows();
+            _arr = pattern;
+
+            if (x_shadow == null || y_shadow == null)
+            {
+                computeShadows();
+            }
+            else
+            {
+                _xShadow = x_shadow;
+                _yShadow = y_shadow;
+            }
+        }
+
+        public function clone():Chunk
+        {
+            // deep-copy chunk array
+            var new_arr:Array = new Array(_arr.length);
+            
+            for (var y:int = 0; y < _arr.length; y++)
+            {
+                // one easy trick discovered by a mom to deep-copy an array
+                new_arr[y] = _arr[y].concat();
+            }
+            
+            return new Chunk(new_arr, _xShadow.concat(), _yShadow.concat());
         }
 
         // compute "shadows" - the sets of x and y coordinates that contain one or more blocks of tetrominium
@@ -69,7 +92,7 @@ package
             {
                 for (var x:int = 0; x < width; x++)
                 {
-                    if (arr[y][x]) 
+                    if (_arr[y][x]) 
                     {
                         x_shadow[x] = true;
                         y_shadow[y] = true;
@@ -77,22 +100,66 @@ package
                 }
             }
 
-            xShadow = x_shadow;
-            yShadow = y_shadow;
+            _xShadow = x_shadow;
+            _yShadow = y_shadow;
+        }
+
+        // try to draw the small chunk on this chunk at the given coordinates
+        public function tryMerge(small:Chunk, small_x0:int, small_y0:int):Chunk
+        {
+            // if the small chunk is off the left/top, fail
+            if (small_x0 < 0 || small_y0 < 0) return null;
+            // if the small chunk is off the right/bottom, fail
+            if (small_x0 + small.width > width || small_y0 + small.height > height) return null;
+
+            // build a place to put the merged chunk.
+            var newChunk:Chunk = clone();
+
+            // for each pixel in the small chunk:
+            for (var small_y:int = 0; small_y < small.height; small_y++)
+            {
+                for (var small_x:int = 0; small_x < + small.width; small_x++)
+                {
+                    // if pixel is set:
+                    if (small.at(small_x, small_y))
+                    {
+                        // compute transformed coordinate
+                        var xform_x:int = small_x + small_x0, xform_y:int = small_y + small_y0;
+                        // if this chunk is set at coordinate, bomb out
+                        if (at(xform_x, xform_y)) return null;
+                        // otherwise scribble on the new chunk
+                        newChunk.set(xform_x, xform_y);
+                    }
+                }
+            }
+            
+            // recompute the chunk's shadows.
+            newChunk.computeShadows();
+
+            return newChunk;
         }
 
         // return the state of a given pixel in this chunk
         public function at(x:int, y:int):Boolean
         {
-            return arr[y][x];
+            return _arr[y][x];
         }
 
-        public function get width():int { return arr[0].length; }
-        public function get height():int { return arr.length; }
+        // fill in a given pixel in this chunk
+        private function set(x:int, y:int):void
+        {
+            _arr[y][x] = true;
+        }
 
-        private var arr:Array;
+        public function get width():int { return _arr[0].length; }
+        public function get height():int { return _arr.length; }
 
-        private var xShadow:Array;
-        private var yShadow:Array;
+        public function get xShadow():Array { return _xShadow; }
+        public function get yShadow():Array { return _yShadow; }
+
+        private var _arr:Array;
+
+        private var _xShadow:Array;
+        private var _yShadow:Array;
     }
 }
