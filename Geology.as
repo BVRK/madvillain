@@ -2,10 +2,9 @@ package
 {
     public class Geology
     {
-        public static function makeChunk():Chunk
+        public static function makeChunk(workspace_w:int = 7, workspace_h:int = 7, n_atoms:int = 20):Chunk
         {
-            const workspace_w:int = 7, workspace_h:int = 7;
-            const n_atoms:int = 20, atom_stride:int = 1;
+            const atom_stride:int = 1;
 
             // build an empty chunk
             var workspace:Chunk = Chunk.empty(workspace_w, workspace_h);
